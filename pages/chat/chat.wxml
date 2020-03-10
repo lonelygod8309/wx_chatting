@@ -1,0 +1,53 @@
+<!-- 这是一个模板，可反复使用 -->
+<template name="msgItem">
+  <view wx:for="{{messages}}" wx:key="id" style="display:inline-block">
+    <text wx:if="item.type == 'text'" style="padding:0;margin:0;width:auto">{{item.content}}</text>
+    <image wx:if="item.type == 'image'" style="width:21px;height:21px;vertical-align:middle;margin:0 3px;" src="{{item.url}}" />
+  </view>
+</template>
+<!-- 这是一个可滚动视图区域，显示消息 -->
+<!-- scroll-y:允许纵向滚动;scroll-top:设置竖向滚动条位置;bindtap:绑定事件，此处绑定tapscroll方法，在js中定义；
+animation：动画事件，此处绑定animation_2，在js中定义。 -->
+<scroll-view scroll-y="true" scroll-into-view="{{toView}}" style="height:{{height-40}}px;background:#eee" animation="{{animation_2}}">
+  <view wx:for="{{messages}}" wx:for-item="i" wx:key="id">
+    <!-- 这里通过wx:if判断是不是我的消息以定义在右半屏输送我的消息 -->
+    <view class="padding clearfix" wx:if="{{i.peopleId == userInfo.nickName}}">
+      <!-- 显示用户头像 -->
+      <image class="right-Avatar" src="{{i.avatarUrl}}"></image>
+      <!-- 绿色三角框指向部件 -->
+      <view class="right-Triangle"></view>
+      <!-- 消息框 -->
+      <view class="right-message padding_half">
+        <!-- 插入上面写好的模板，显示消息内容 -->
+        <view style="display:inline-block">
+    <text wx:if="item.type == 'text'" style="padding:0;margin:0;width:auto">{{i.content}}</text></view>
+        <image wx:if="{{i.imgList}}" style="max-width:150px;max-height:120px" src="{{i.imgList}}"></image>
+      </view>
+    </view>
+    <!-- 这里通过wx:if判断是不是我的消息以定义在左半屏输送他人的消息 -->
+    <view class="padding clearfix" wx:else>
+      <image class="left-Avatar" src="{{i.avatar}}"></image>
+      <view class="left-Triangle"></view>
+      <view class="left-message padding_half">
+        <template is="msgItem" data="{{...i}}" />
+      </view>
+    </view>
+  </view>
+</scroll-view>
+<!-- 这是一个可滚动视图区域，放输入框和发送按钮 -->
+<view class="send-container" id="scrollBottom">
+  <view class="padding_half">
+    <!-- 这是一个输入框，输入的内容会通过sendMessage方法存入msg变量中 -->
+    <input placeholder=" 请输入消息" value="{{msg}}" bindinput="sendMessage" />
+  </view>
+  <!-- 这是一个选择图片/发送消息的按钮，绑定elseBtn方法。
+       当输入框不为空时，该按钮的功能为发送消息；
+       输入框为空时，可进行图片选择。 -->
+  <view class="icon {{ more }} text-center" bindtap="elseBtn"></view>
+</view>
+<!-- 这是一个弹出的选择图片框 -->
+<view id="elsePanel" wx:if="{{moreBox}}" animation="{{animation}}">
+  <view class="wa-row">
+    <image class="moreImage" bindtap="chooseImg" src="/images/image.png"></image>
+  </view>
+</view>
